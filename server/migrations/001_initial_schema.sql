@@ -1,3 +1,11 @@
+CREATE TABLE users (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  name TEXT NOT NULL,
+  email TEXT NOT NULL UNIQUE,
+  password_hash TEXT NOT NULL,
+  created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
 CREATE TABLE friends (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   name TEXT NOT NULL,
@@ -43,3 +51,4 @@ CREATE INDEX idx_expenses_spent_on ON expenses(spent_on);
 CREATE INDEX idx_expenses_category ON expenses(category);
 CREATE INDEX idx_debts_friend_id ON debts(friend_id);
 CREATE INDEX idx_repayments_debt_id ON repayments(debt_id);
+CREATE INDEX idx_users_email ON users(email);

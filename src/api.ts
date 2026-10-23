@@ -1,4 +1,4 @@
-import type { AuthSession, Debt, DebtPayload, Expense, ExpensePayload, Friend, Summary, User } from './types';
+import type { AuthSession, Debt, DebtPayload, Expense, ExpensePayload, Friend, Repayment, Summary, User } from './types';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://127.0.0.1:4000/api';
 
@@ -48,5 +48,7 @@ export const spendwiseApi = {
     api<Debt>(`/debts/${id}`, { method: 'PUT', body: JSON.stringify(debt) }),
   deleteDebt: (id: number) => api<void>(`/debts/${id}`, { method: 'DELETE' }),
   addRepayment: (debtId: number, repayment: { amount: number; date: string; notes: string }) =>
-    api(`/debts/${debtId}/repayments`, { method: 'POST', body: JSON.stringify(repayment) })
+    api<Repayment>(`/debts/${debtId}/repayments`, { method: 'POST', body: JSON.stringify(repayment) }),
+  getRepayments: (debtId: number) => api<Repayment[]>(`/debts/${debtId}/repayments`),
+  deleteRepayment: (id: number) => api<void>(`/debts/repayments/${id}`, { method: 'DELETE' })
 };

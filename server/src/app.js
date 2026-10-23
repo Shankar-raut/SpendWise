@@ -18,7 +18,25 @@ export function createApp(db, options = {}) {
   const debts = createDebtRepository(db);
   const users = createUserRepository(db);
 
-  app.use(cors({ origin: options.clientOrigin || true }));
+  app.use(cors({
+    origin: (origin, callback) => {
+      // Allow requests with no origin (like mobile apps, curl) or configured origins
+      const allowedOrigins = [
+        options.clientOrigin,
+        'http://localhost:5173',
+        'http://127.0.0.1:5173',
+        'http://localhost:3000',
+        'http://127.0.0.1:3000'
+      ].filter(Boolean);
+
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error('Not allowed by CORS'), false);
+      }
+    },
+    credentials: true
+  }));
   app.use(express.json());
 
   app.get('/health', (_req, res) => {

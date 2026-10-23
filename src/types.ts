@@ -57,3 +57,12 @@ export type DebtPayload = {
   date: string;
   notes: string;
 };
+
+export type Repayment = {
+  id: number;
+  debtId: number;
+  amount: number;
+  date: string;
+  notes: string;
+  createdAt?: string;
+};

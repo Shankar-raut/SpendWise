@@ -111,6 +111,26 @@ test('rejects invalid expense input', async () => {
   }
 });
 
+test('allows requests from the LAN origin by default', async () => {
+  const server = app.listen(0);
+  const port = server.address().port;
+  try {
+    const response = await fetch(`http://127.0.0.1:${port}/api/auth/login`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Origin: 'http://10.196.216.112:5173'
+      },
+      body: JSON.stringify({ email: 'test@example.com', password: 'secret123' })
+    });
+
+    assert.equal(response.headers.get('access-control-allow-origin'), 'http://10.196.216.112:5173');
+    assert.equal(response.status, 200);
+  } finally {
+    await new Promise((resolve) => server.close(resolve));
+  }
+});
+
 test('rejects protected routes without login', async () => {
   const server = app.listen(0);
   const port = server.address().port;

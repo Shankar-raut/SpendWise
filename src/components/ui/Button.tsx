@@ -21,11 +21,11 @@ export const Button = (({
     'inline-flex items-center justify-center gap-2 font-medium rounded-lg transition-all duration-150 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-bg-app';
 
   const variants = {
-    primary: 'bg-primary text-white shadow-[0_2px_8px_rgba(99,102,241,0.3)] hover:bg-primary-hover hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed',
-    secondary: 'bg-white/6 text-white border border-border hover:bg-white/10 hover:border-white/18 disabled:opacity-50 disabled:cursor-not-allowed',
-    ghost: 'bg-transparent border border-border text-text-secondary hover:bg-white/5 hover:text-white disabled:opacity-50 disabled:cursor-not-allowed',
-    danger: 'bg-danger-bg border border-danger-border text-danger hover:bg-danger-bg/80 disabled:opacity-50 disabled:cursor-not-allowed',
-    settle: 'bg-positive-bg border border-positive-border text-positive hover:bg-positive-bg/80 disabled:opacity-50 disabled:cursor-not-allowed'
+    primary: 'btn-variant-primary hover:-translate-y-0.5',
+    secondary: 'btn-variant-secondary',
+    ghost: 'btn-variant-ghost',
+    danger: 'btn-variant-danger',
+    settle: 'btn-variant-settle'
   };
 
   const sizes = {

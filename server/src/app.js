@@ -23,6 +23,8 @@ export function createApp(db, options = {}) {
       // Allow requests with no origin (like mobile apps, curl) or configured origins
       const allowedOrigins = [
         options.clientOrigin,
+        'http://10.196.216.112:5173',
+        'http://0.0.0.0:5173',
         'http://localhost:5173',
         'http://127.0.0.1:5173',
         'http://localhost:3000',

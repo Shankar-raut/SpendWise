@@ -8,6 +8,7 @@ runMigrations(db);
 
 const app = createApp(db, { clientOrigin: config.clientOrigin });
 
-app.listen(config.port, () => {
-  console.log(`SpendWise API running on http://127.0.0.1:${config.port}`);
+app.listen(config.port, '0.0.0.0', () => {
+  console.log(`SpendWise API running on http://0.0.0.0:${config.port}`);
+  console.log(`LAN access: http://10.196.216.112:${config.port}`);
 });

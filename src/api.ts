@@ -1,6 +1,6 @@
 import type { AuthSession, Debt, DebtPayload, Expense, ExpensePayload, Friend, Repayment, Summary, User } from './types';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://127.0.0.1:4000/api';
+const API_URL = import.meta.env.VITE_API_URL || 'http://10.196.216.112:4000/api';
 
 type ApiEnvelope<T> = { data: T };
 

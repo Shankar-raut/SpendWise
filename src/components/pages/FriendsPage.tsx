@@ -71,116 +71,146 @@ export function FriendsPage({
   };
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+    <div className="flex flex-col gap-6" role="main" aria-label="Friends and money">
       {/* Header */}
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 12, flexWrap: 'wrap' }}>
+      <header className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3">
         <div>
-          <h2 style={{ fontSize: '1.5rem', fontWeight: 700 }}>Friends & Money</h2>
-          <p style={{ color: 'var(--text-dim)', fontSize: '0.9rem' }}>
-            See what friends owe you and what you owe them
-          </p>
+          <h1 className="text-3xl font-bold">Friends & Money</h1>
+          <p className="text-dim text-base">See what friends owe you and what you owe them</p>
         </div>
-        <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-          <button className="btn btn-secondary" onClick={onAddFriend}><UserPlus size={16} /> Add Friend</button>
-          <button className="btn btn-primary" onClick={() => onAddDebt(filterFriendId || undefined)}><Plus size={16} /> Add Bill / Split</button>
+        <div className="flex flex-wrap gap-2 w-full sm:w-auto">
+          <button className="btn btn-secondary btn-size-md" onClick={onAddFriend} aria-label="Add a new friend">
+            <UserPlus size={16} aria-hidden="true" />
+            Add Friend
+          </button>
+          <button className="btn btn-primary btn-size-md" onClick={() => onAddDebt(filterFriendId || undefined)} aria-label="Add a new bill or split">
+            <Plus size={16} aria-hidden="true" />
+            Add Bill / Split
+          </button>
         </div>
-      </div>
+      </header>
 
       {/* Friend Cards */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px' }}>
-        <span style={{ fontSize: '0.8rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--text-muted)' }}>
-          Your Friends ({friends.length})
-        </span>
-        {filterFriendId && (
-          <button className="btn btn-ghost btn-sm" onClick={() => setFilterFriendId(null)}>Clear filter</button>
-        )}
-      </div>
-
-      {friends.length === 0 ? (
-        <div className="card" style={{ textAlign: 'center', padding: '48px 24px' }}>
-          <Users size={48} style={{ color: 'var(--text-muted)', marginBottom: '16px' }} />
-          <p style={{ color: 'var(--text-dim)', marginBottom: '16px' }}>No friends added yet.</p>
-          <button className="btn btn-primary" onClick={onAddFriend}><UserPlus size={16} /> Add Your First Friend</button>
+      <section aria-labelledby="friends-heading" className="flex flex-col gap-4">
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <h2 id="friends-heading" className="text-xs font-semibold uppercase tracking-wider text-muted">
+            Your Friends ({friends.length})
+          </h2>
+          {filterFriendId && (
+            <button className="btn btn-ghost btn-size-sm" onClick={() => setFilterFriendId(null)} aria-label="Clear friend filter">
+              Clear filter
+            </button>
+          )}
         </div>
-      ) : (
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '16px' }}>
-          {friends.map((friend) => {
-            const isSelected = filterFriendId === friend.id;
-            const balance = friend.balance;
-            const hasToGive = balance > 0;
-            const youOwe = balance < 0;
 
-            return (
-              <div key={friend.id} className="card" style={{ display: 'flex', flexDirection: 'column', borderColor: isSelected ? 'var(--primary)' : 'var(--border)', background: isSelected ? 'rgba(99, 102, 241, 0.05)' : 'var(--bg-elevated)' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                  <div className="avatar avatar-lg">{friend.name.slice(0, 2).toUpperCase()}</div>
-                  <div style={{ flex: 1, minWidth: 0 }}>
-                    <h4 style={{ fontWeight: 600, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{friend.name}</h4>
-                    <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>{friend.email || 'Friend'}</p>
+        {friends.length === 0 ? (
+          <article className="card-variant-default card-padding-lg rounded-xl border border-border text-center" role="status">
+            <Users size={48} className="mx-auto text-muted mb-4" aria-hidden="true" />
+            <p className="text-dim mb-4">No friends added yet.</p>
+            <button className="btn btn-primary" onClick={onAddFriend} aria-label="Add your first friend">
+              <UserPlus size={16} aria-hidden="true" />
+              Add Your First Friend
+            </button>
+          </article>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4" role="list" aria-label="Friends list">
+            {friends.map((friend) => {
+              const isSelected = filterFriendId === friend.id;
+              const balance = friend.balance;
+              const hasToGive = balance > 0;
+              const youOwe = balance < 0;
+
+              return (
+                <article
+                  key={friend.id}
+                  className={`card-variant-default rounded-xl border transition-all ${isSelected ? 'border-primary bg-primary-bg/20' : 'border-border bg-bg-elevated'}`}
+                  role="listitem"
+                  aria-selected={isSelected}
+                >
+                  <div className="card-padding-md">
+                    <div className="flex items-center gap-3 mb-4">
+                      <div className="avatar avatar-lg" aria-hidden="true">{friend.name.slice(0, 2).toUpperCase()}</div>
+                      <div className="min-w-0 flex-1">
+                        <h3 className="font-semibold truncate">{friend.name}</h3>
+                        <p className="text-sm text-muted truncate">{friend.email || 'Friend'}</p>
+                      </div>
+                    </div>
+
+                    <div className="mb-4 p-4 rounded-lg bg-bg text-center">
+                      <p className="text-xs font-semibold uppercase tracking-wider text-muted mb-1">Current Status</p>
+                      <p className="text-2xl font-bold {hasToGive ? 'text-success' : youOwe ? 'text-warning' : 'text-dim'}">
+                        {hasToGive ? `+${formatCurrency(balance)}` : youOwe ? `-${formatCurrency(Math.abs(balance))}` : '₹0'}
+                      </p>
+                      <p className="text-sm text-dim mt-1">
+                        {hasToGive
+                          ? `${friend.name} has to pay you`
+                          : youOwe
+                          ? `You have to pay ${friend.name}`
+                          : 'All clear! Nobody owes anything'}
+                      </p>
+                    </div>
+
+                    <div className="flex gap-2 pt-4 border-t border-border">
+                      {balance !== 0 ? (
+                        <button
+                          className="btn flex-1"
+                          style={{
+                            background: hasToGive ? 'var(--success-bg)' : 'var(--warning-bg)',
+                            color: hasToGive ? 'var(--success)' : 'var(--warning)',
+                            borderColor: hasToGive ? 'var(--success-border)' : 'var(--warning-border)'
+                          }}
+                          onClick={() => {
+                            const friendDebt = debts.find((d) => d.friendId === friend.id && d.outstanding > 0);
+                            if (friendDebt) onRecordPayment(friendDebt);
+                          }}
+                          aria-label={hasToGive ? `Record payment received from ${friend.name}` : `Record payment to ${friend.name}`}
+                        >
+                          <CheckCircle2 size={14} aria-hidden="true" />
+                          {hasToGive ? `${friend.name} Paid Me` : `I Paid ${friend.name}`}
+                        </button>
+                      ) : (
+                        <button className="btn btn-secondary flex-1" onClick={() => onAddDebt(friend.id)} aria-label={`Add a new split with ${friend.name}`}>
+                          <Plus size={14} aria-hidden="true" /> New Split
+                        </button>
+                      )}
+                      <button
+                        className={`btn btn-size-sm flex-1 ${isSelected ? 'btn-primary' : 'btn-ghost'}`}
+                        onClick={() => setFilterFriendId(isSelected ? null : friend.id)}
+                        aria-pressed={isSelected}
+                        aria-label={isSelected ? `Clear filter for ${friend.name}` : `Filter bills for ${friend.name}`}
+                      >
+                        {isSelected ? 'Filtered' : 'Filter Bills'}
+                      </button>
+                    </div>
                   </div>
-                </div>
-
-                <div style={{ marginTop: '16px', padding: '16px', borderRadius: 'var(--radius)', background: 'var(--bg)', textAlign: 'center' }}>
-                  <p style={{ fontSize: '0.7rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--text-muted)', marginBottom: '4px' }}>Current Status</p>
-                  <p style={{ fontSize: '1.5rem', fontWeight: 700, color: hasToGive ? 'var(--success)' : youOwe ? 'var(--warning)' : 'var(--text-dim)' }}>
-                    {hasToGive ? `+${formatCurrency(balance)}` : youOwe ? `-${formatCurrency(Math.abs(balance))}` : '₹0'}
-                  </p>
-                  <p style={{ fontSize: '0.85rem', color: 'var(--text-dim)', marginTop: '4px' }}>
-                    {hasToGive
-                      ? `${friend.name} has to pay you`
-                      : youOwe
-                      ? `You have to pay ${friend.name}`
-                      : 'All clear! Nobody owes anything'}
-                  </p>
-                </div>
-
-                <div style={{ marginTop: 'auto', display: 'flex', gap: '8px', paddingTop: '16px', borderTop: '1px solid var(--border)' }}>
-                  {balance !== 0 ? (
-                    <button
-                      className="btn flex-1"
-                      style={{ background: hasToGive ? 'var(--success-bg)' : 'var(--warning-bg)', color: hasToGive ? 'var(--success)' : 'var(--warning)', borderColor: hasToGive ? 'var(--success-border)' : 'var(--warning-border)' }}
-                      onClick={() => {
-                        const friendDebt = debts.find((d) => d.friendId === friend.id && d.outstanding > 0);
-                        if (friendDebt) onRecordPayment(friendDebt);
-                      }}
-                    >
-                      <CheckCircle2 size={14} />
-                      {hasToGive ? `${friend.name} Paid Me` : `I Paid ${friend.name}`}
-                    </button>
-                  ) : (
-                    <button className="btn btn-secondary flex-1" onClick={() => onAddDebt(friend.id)}>
-                      <Plus size={14} /> New Split
-                    </button>
-                  )}
-                  <button className={`btn ${isSelected ? 'btn-primary' : 'btn-ghost'} btn-sm flex-1`} onClick={() => setFilterFriendId(isSelected ? null : friend.id)}>
-                    {isSelected ? 'Filtered' : 'Filter Bills'}
-                  </button>
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      )}
+                </article>
+              );
+            })}
+          </div>
+        )}
+      </section>
 
       {/* Debts Section */}
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', flexWrap: 'wrap' }}>
+      <section aria-labelledby="bills-heading" className="flex flex-col gap-4">
+        <div className="flex flex-col gap-3">
           <div>
-            <h3 style={{ fontSize: '1.25rem', fontWeight: 600 }}>
+            <h2 id="bills-heading" className="text-2xl font-semibold">
               {filterFriendId
                 ? `Bills with ${friends.find((f) => f.id === filterFriendId)?.name}`
                 : 'All Bills & Shared Expenses'}
-            </h3>
-            <p style={{ color: 'var(--text-dim)', fontSize: '0.85rem' }}>
-              Showing {filteredDebts.length} record{filteredDebts.length !== 1 ? 's' : ''}
-            </p>
+            </h2>
+            <p className="text-dim text-sm">Showing {filteredDebts.length} record{filteredDebts.length !== 1 ? 's' : ''}</p>
           </div>
-          <div className="pills">
+          <div className="pills flex gap-1 bg-bg-elevated p-1 rounded-lg border border-border" role="tablist" aria-label="Filter bills">
             {DEBT_FILTERS.map((filter) => (
               <button
                 key={filter.id}
                 onClick={() => setDebtFilterTab(filter.id as typeof debtFilterTab)}
-                className={`pill ${debtFilterTab === filter.id ? 'active' : ''}`}
+                className={`pill px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${debtFilterTab === filter.id ? 'bg-primary text-white' : 'text-dim hover:text-white'}`}
+                role="tab"
+                aria-selected={debtFilterTab === filter.id}
+                aria-controls={`${filter.id}-panel`}
+                id={`${filter.id}-tab`}
               >
                 {filter.label}
               </button>
@@ -189,12 +219,12 @@ export function FriendsPage({
         </div>
 
         {filteredDebts.length === 0 ? (
-          <div className="card" style={{ textAlign: 'center', padding: '48px 24px' }}>
-            <Clock size={48} style={{ color: 'var(--text-muted)', marginBottom: '16px' }} />
-            <p style={{ color: 'var(--text-dim)' }}>No bills found for this view.</p>
-          </div>
+          <article className="card-variant-default card-padding-lg rounded-xl border border-border text-center" role="status">
+            <Clock size={48} className="mx-auto text-muted mb-4" aria-hidden="true" />
+            <p className="text-dim">No bills found for this view.</p>
+          </article>
         ) : (
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))', gap: '16px' }}>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4" role="list" aria-label="Bills and shared expenses">
             {filteredDebts.map((debt) => {
               const isSettled = debt.outstanding === 0;
               const friendOwesMe = debt.direction === 'owes_me';
@@ -203,104 +233,145 @@ export function FriendsPage({
               const historyList = repaymentsCache[debt.id];
 
               return (
-                <div key={debt.id} className="card" style={{ display: 'flex', flexDirection: 'column', opacity: isSettled ? 0.7 : 1 }}>
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                    <span className={`badge ${friendOwesMe ? 'badge-success' : 'badge-warning'}`} style={{ fontSize: '0.7rem' }}>
-                      {friendOwesMe
-                        ? `${debt.friendName} owes you`
-                        : `You owe ${debt.friendName}`}
-                    </span>
-                    <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>{formatDate(debt.date)}</span>
-                  </div>
-
-                  <div style={{ marginTop: '16px', flex: 1 }}>
-                    <h4 style={{ fontWeight: 600 }}>{debt.title}</h4>
-                    <p style={{ fontSize: '0.85rem', color: 'var(--text-dim)' }}>Friend: <strong>{debt.friendName}</strong></p>
-                    {debt.notes && <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', marginTop: '4px' }}>{debt.notes}</p>}
-                  </div>
-
-                  <div style={{ marginTop: '16px', padding: '16px', borderRadius: 'var(--radius)', background: 'var(--bg)', display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                      <span style={{ fontSize: '0.85rem', color: 'var(--text-dim)' }}>Remaining to pay:</span>
-                      <strong style={{ fontSize: '1.25rem', color: isSettled ? 'var(--text-muted)' : friendOwesMe ? 'var(--success)' : 'var(--warning)' }}>
-                        {isSettled ? 'All Cleared' : formatCurrency(debt.outstanding)}
-                      </strong>
-                    </div>
-
-                    <div className="progress" style={{ height: '6px' }}>
-                      <div className={`progress-fill ${friendOwesMe ? 'progress-fill-success' : 'progress-fill-warning'}`} style={{ width: `${progressPercent}%` }} />
-                    </div>
-
-                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.75rem', color: 'var(--text-muted)' }}>
-                      <span>Paid: {formatCurrency(debt.repaid)}</span>
-                      <span>Total Bill: {formatCurrency(debt.amount)}</span>
-                    </div>
-                  </div>
-
-                  <div style={{ marginTop: '16px', paddingTop: '16px', borderTop: '1px solid var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '8px', flexWrap: 'wrap' }}>
-                    {!isSettled ? (
-                      <button
-                        className="btn flex-1"
-                        style={{ background: friendOwesMe ? 'var(--success-bg)' : 'var(--warning-bg)', color: friendOwesMe ? 'var(--success)' : 'var(--warning)', borderColor: friendOwesMe ? 'var(--success-border)' : 'var(--warning-border)' }}
-                        onClick={() => onRecordPayment(debt)}
-                      >
-                        <CheckCircle2 size={15} />
-                        {friendOwesMe ? 'Record Money Received' : 'Record Money Paid'}
-                      </button>
-                    ) : (
-                      <span className="badge badge-success" style={{ flex: 1, justifyContent: 'center' }}>
-                        <CheckCircle2 size={14} /> Cleared
+                <article
+                  key={debt.id}
+                  className={`card-variant-default rounded-xl border transition-opacity ${isSettled ? 'opacity-70' : ''}`}
+                  role="listitem"
+                  style={{ opacity: isSettled ? 0.7 : 1 }}
+                >
+                  <div className="card-padding-md">
+                    <div className="flex items-center justify-between mb-4">
+                      <span className={`badge ${friendOwesMe ? 'badge-success' : 'badge-warning'}`} style={{ fontSize: '0.7rem' }}>
+                        {friendOwesMe
+                          ? `${debt.friendName} owes you`
+                          : `You owe ${debt.friendName}`}
                       </span>
-                    )}
-
-                    <div style={{ display: 'flex', gap: '4px' }}>
-                      <button className="icon-btn btn-sm" onClick={() => handleToggleHistory(debt.id)} aria-label="View payment history">
-                        <History size={15} />
-                      </button>
-                      <button className="icon-btn btn-sm" onClick={() => onEditDebt(debt)} aria-label="Edit bill">
-                        <Edit3 size={15} />
-                      </button>
-                      <button className="icon-btn btn-sm" style={{ color: 'var(--danger)' }} onClick={() => onDeleteDebt(debt.id)} aria-label="Delete bill">
-                        <Trash2 size={15} />
-                      </button>
+                      <span className="text-xs text-muted">{formatDate(debt.date)}</span>
                     </div>
-                  </div>
 
-                  {isExpanded && (
-                    <div style={{ marginTop: '16px', paddingTop: '16px', borderTop: '1px solid var(--border)' }}>
-                      <div style={{ padding: '16px', borderRadius: 'var(--radius)', background: 'var(--bg)', border: '1px solid var(--border)', display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                        <p style={{ fontSize: '0.7rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--text-muted)' }}>Payment History:</p>
-                        {!historyList ? (
-                          <div style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>Loading payments...</div>
-                        ) : historyList.length === 0 ? (
-                          <div style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>No payments recorded yet.</div>
-                        ) : (
-                          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                            {historyList.map((item) => (
-                              <div key={item.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px', borderRadius: 'var(--radius)', background: 'rgba(255,255,255,0.03)' }}>
-                                <div>
-                                  <strong>{formatCurrency(item.amount)}</strong>
-                                  <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>{item.notes || 'No note'}</p>
-                                </div>
-                                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.85rem', color: 'var(--text-dim)' }}>
-                                  <span>{formatDate(item.date)}</span>
-                                  <button className="icon-btn btn-sm" style={{ color: 'var(--danger)' }} onClick={() => onDeleteRepayment(item.id, debt.id)} aria-label="Delete this payment">
-                                    <Trash2 size={12} />
-                                  </button>
-                                </div>
-                              </div>
-                            ))}
-                          </div>
-                        )}
+                    <div className="mb-4 flex-1">
+                      <h3 className="font-semibold">{debt.title}</h3>
+                      <p className="text-sm text-dim">Friend: <strong>{debt.friendName}</strong></p>
+                      {debt.notes && <p className="text-sm text-muted mt-1">{debt.notes}</p>}
+                    </div>
+
+                    <div className="mb-4 p-4 rounded-lg bg-bg flex flex-col gap-3">
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm text-dim">Remaining to pay:</span>
+                        <strong className={`text-xl ${isSettled ? 'text-muted' : friendOwesMe ? 'text-success' : 'text-warning'}`}>
+                          {isSettled ? 'All Cleared' : formatCurrency(debt.outstanding)}
+                        </strong>
+                      </div>
+
+                      <div className="progress-comp h-1.5">
+                        <div
+                          className={`progress-fill-comp ${friendOwesMe ? 'progress-fill-success-comp' : 'progress-fill-warning-comp'}`}
+                          style={{ width: `${progressPercent}%` }}
+                          role="progressbar"
+                          aria-valuenow={progressPercent}
+                          aria-valuemin={0}
+                          aria-valuemax={100}
+                          aria-label="Payment progress"
+                        />
+                      </div>
+
+                      <div className="flex justify-between text-xs text-muted">
+                        <span>Paid: {formatCurrency(debt.repaid)}</span>
+                        <span>Total Bill: {formatCurrency(debt.amount)}</span>
                       </div>
                     </div>
-                  )}
-                </div>
+
+                    <div className="flex flex-wrap items-center justify-between gap-2 pt-4 border-t border-border">
+                      {!isSettled ? (
+                        <button
+                          className="btn flex-1 min-w-[160px]"
+                          style={{
+                            background: friendOwesMe ? 'var(--success-bg)' : 'var(--warning-bg)',
+                            color: friendOwesMe ? 'var(--success)' : 'var(--warning)',
+                            borderColor: friendOwesMe ? 'var(--success-border)' : 'var(--warning-border)'
+                          }}
+                          onClick={() => onRecordPayment(debt)}
+                          aria-label={friendOwesMe ? `Record money received for ${debt.title}` : `Record money paid for ${debt.title}`}
+                        >
+                          <CheckCircle2 size={15} aria-hidden="true" />
+                          {friendOwesMe ? 'Record Money Received' : 'Record Money Paid'}
+                        </button>
+                      ) : (
+                        <span className="badge badge-success flex-1 justify-center min-w-[160px]">
+                          <CheckCircle2 size={14} aria-hidden="true" /> Cleared
+                        </span>
+                      )}
+
+                      <div className="flex gap-1">
+                        <button
+                          className="icon-btn btn-size-sm"
+                          onClick={() => handleToggleHistory(debt.id)}
+                          aria-label={isExpanded ? `Hide payment history for ${debt.title}` : `View payment history for ${debt.title}`}
+                          aria-expanded={isExpanded}
+                        >
+                          {isExpanded ? <ChevronDown size={15} aria-hidden="true" /> : <History size={15} aria-hidden="true" />}
+                        </button>
+                        <button
+                          className="icon-btn btn-size-sm"
+                          onClick={() => onEditDebt(debt)}
+                          aria-label={`Edit bill: ${debt.title}`}
+                        >
+                          <Edit3 size={15} aria-hidden="true" />
+                        </button>
+                        <button
+                          className="icon-btn btn-size-sm text-danger"
+                          onClick={() => onDeleteDebt(debt.id)}
+                          aria-label={`Delete bill: ${debt.title}`}
+                        >
+                          <Trash2 size={15} aria-hidden="true" />
+                        </button>
+                      </div>
+                    </div>
+
+                    {isExpanded && (
+                      <div className="mt-4 pt-4 border-t border-border" role="region" aria-label="Payment history">
+                        <div className="p-4 rounded-lg bg-bg border border-border flex flex-col gap-2">
+                          <p className="text-xs font-semibold uppercase tracking-wider text-muted">Payment History:</p>
+                          {!historyList ? (
+                            <div className="text-muted text-sm">Loading payments...</div>
+                          ) : historyList.length === 0 ? (
+                            <div className="text-muted text-sm">No payments recorded yet.</div>
+                          ) : (
+                            <div className="flex flex-col gap-2" role="list" aria-label="Payment history">
+                              {historyList.map((item) => (
+                                <div
+                                  key={item.id}
+                                  className="flex items-center justify-between p-3 rounded-lg bg-white/5"
+                                  role="listitem"
+                                >
+                                  <div>
+                                    <strong>{formatCurrency(item.amount)}</strong>
+                                    <p className="text-xs text-muted">{item.notes || 'No note'}</p>
+                                  </div>
+                                  <div className="flex items-center gap-2 text-sm text-dim">
+                                    <span>{formatDate(item.date)}</span>
+                                    <button
+                                      className="icon-btn btn-size-sm text-danger"
+                                      onClick={() => onDeleteRepayment(item.id, debt.id)}
+                                      aria-label={`Delete payment of ${formatCurrency(item.amount)} on ${formatDate(item.date)}`}
+                                    >
+                                      <Trash2 size={12} aria-hidden="true" />
+                                    </button>
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </article>
               );
             })}
           </div>
         )}
-      </div>
+      </section>
     </div>
   );
 }

@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { Search, Plus, Edit3, Trash2, X } from 'lucide-react';
+import { Search, Plus, Edit3, Trash2, X, Filter } from 'lucide-react';
 import type { Expense } from '../../types';
 import { formatCurrency, formatDate, CATEGORIES } from '../../utils/format';
 
@@ -45,6 +45,8 @@ export function ExpensesPage({
     [filteredExpenses]
   );
 
+  const hasActiveFilters = search || categoryFilter || dateFilter !== 'all';
+
   const handleClearFilters = () => {
     setSearch('');
     setCategoryFilter('');
@@ -52,122 +54,158 @@ export function ExpensesPage({
   };
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+    <div className="flex flex-col gap-6" role="main" aria-label="Expenses">
       {/* Header */}
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 12, flexWrap: 'wrap' }}>
+      <header className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3">
         <div>
-          <h2 style={{ fontSize: '1.5rem', fontWeight: 700 }}>My Daily Expenses</h2>
-          <p style={{ color: 'var(--text-dim)', fontSize: '0.9rem' }}>
+          <h1 className="text-3xl font-bold">My Daily Expenses</h1>
+          <p className="text-dim text-base">
             Showing <strong>{filteredExpenses.length}</strong> expense{filteredExpenses.length !== 1 ? 's' : ''}{' '}
             · Total: <strong>{formatCurrency(totalFiltered)}</strong>
           </p>
         </div>
-        <button className="btn btn-primary" onClick={onAddExpense}><Plus size={16} /> Add Expense</button>
-      </div>
+        <button className="btn btn-primary btn-size-md w-full sm:w-auto" onClick={onAddExpense} aria-label="Add a new expense">
+          <Plus size={16} aria-hidden="true" />
+          Add Expense
+        </button>
+      </header>
 
       {/* Filter Toolbar */}
-      <div className="card" style={{ padding: '16px', display: 'flex', flexWrap: 'wrap', gap: 12, alignItems: 'center' }}>
-        <div className="search-wrap" style={{ flex: 1, minWidth: 240 }}>
-          <Search size={16} />
-          <input
-            type="text"
-            placeholder="Search by name, note, or category..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-          />
-          {search && (
-            <button onClick={() => setSearch('')} className="icon-btn" aria-label="Clear search" style={{ position: 'absolute', right: '8px', top: '50%', transform: 'translateY(-50%)' }}>
-              <X size={14} />
+      <section className="card-variant-default card-padding-md rounded-xl border border-border" aria-labelledby="filters-heading">
+        <h2 id="filters-heading" className="sr-only">Filters</h2>
+        <div className="flex flex-wrap items-center gap-3">
+          {/* Search */}
+          <div className="search-wrap relative flex-1 min-w-[240px]">
+            <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted pointer-events-none" aria-hidden="true" />
+            <input
+              type="text"
+              placeholder="Search by name, note, or category..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="w-full pl-10 bg-bg-input border border-border rounded-lg px-4 py-2.5 text-sm text-white placeholder:text-muted transition-colors focus:border-primary focus:ring-1 focus:ring-primary"
+              aria-label="Search expenses"
+            />
+            {search && (
+              <button
+                onClick={() => setSearch('')}
+                className="icon-btn absolute right-2 top-1/2 -translate-y-1/2"
+                aria-label="Clear search"
+              >
+                <X size={14} aria-hidden="true" />
+              </button>
+            )}
+          </div>
+
+          {/* Date Filter Pills */}
+          <div className="pills flex gap-1 bg-bg-elevated p-1 rounded-lg border border-border">
+            {(['all', 'today', 'month'] as const).map((filter) => (
+              <button
+                key={filter}
+                onClick={() => setDateFilter(filter)}
+                className={`pill px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${dateFilter === filter ? 'bg-primary text-white' : 'text-dim hover:text-white'}`}
+                aria-pressed={dateFilter === filter}
+              >
+                {filter === 'all' ? 'All Time' : filter === 'today' ? 'Today' : 'This Month'}
+              </button>
+            ))}
+          </div>
+
+          {/* Category Filter */}
+          <div className="min-w-[180px] max-w-[220px]">
+            <select
+              value={categoryFilter}
+              onChange={(e) => setCategoryFilter(e.target.value)}
+              className="w-full appearance-none bg-bg-input border border-border rounded-lg px-4 py-2.5 pr-10 text-sm text-white transition-colors focus:border-primary focus:ring-1 focus:ring-primary"
+              aria-label="Filter by category"
+            >
+              <option value="">All Categories</option>
+              {CATEGORIES.map((c) => (
+                <option key={c} value={c}>{c}</option>
+              ))}
+            </select>
+          </div>
+
+          {hasActiveFilters && (
+            <button className="btn btn-ghost btn-size-sm" onClick={handleClearFilters} aria-label="Clear all filters">
+              <Filter size={14} className="mr-1" aria-hidden="true" />
+              Clear Filters
             </button>
           )}
         </div>
-
-        <div className="pills" style={{ display: 'flex', gap: '4px' }}>
-          {(['all', 'today', 'month'] as const).map((filter) => (
-            <button
-              key={filter}
-              onClick={() => setDateFilter(filter)}
-              className={`pill ${dateFilter === filter ? 'active' : ''}`}
-            >
-              {filter === 'all' ? 'All Time' : filter === 'today' ? 'Today' : 'This Month'}
-            </button>
-          ))}
-        </div>
-
-        <div style={{ minWidth: 180, maxWidth: 220 }}>
-          <select
-            value={categoryFilter}
-            onChange={(e) => setCategoryFilter(e.target.value)}
-            className="field"
-            style={{ width: '100%' }}
-          >
-            <option value="">All Categories</option>
-            {CATEGORIES.map((c) => (
-              <option key={c} value={c}>{c}</option>
-            ))}
-          </select>
-        </div>
-
-        {(search || categoryFilter || dateFilter !== 'all') && (
-          <button className="btn btn-ghost btn-sm" onClick={handleClearFilters}>Clear Filters</button>
-        )}
-      </div>
+      </section>
 
       {/* Expenses Table */}
-      <div className="table-wrap">
-        <table className="table">
-          <thead>
-            <tr>
-              <th>Category</th>
-              <th>Description</th>
-              <th>Date</th>
-              <th style={{ textAlign: 'right' }}>Amount</th>
-              <th style={{ textAlign: 'right' }}>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {isLoading ? (
+      <section className="card-variant-default card-padding-none rounded-xl border border-border overflow-hidden">
+        <div className="table-wrap overflow-x-auto">
+          <table className="table w-full border-collapse" role="table" aria-label="Expenses list">
+            <thead>
               <tr>
-                <td colSpan={5} style={{ textAlign: 'center', padding: '48px' }}>
-                  <div className="loading"><div className="spinner" /></div>
-                </td>
+                <th scope="col" className="px-3 py-2 text-xs font-semibold uppercase tracking-wider text-muted border-b border-border bg-bg">Category</th>
+                <th scope="col" className="px-3 py-2 text-xs font-semibold uppercase tracking-wider text-muted border-b border-border bg-bg">Description</th>
+                <th scope="col" className="px-3 py-2 text-xs font-semibold uppercase tracking-wider text-muted border-b border-border bg-bg">Date</th>
+                <th scope="col" className="px-3 py-2 text-xs font-semibold uppercase tracking-wider text-muted border-b border-border bg-bg text-right">Amount</th>
+                <th scope="col" className="px-3 py-2 text-xs font-semibold uppercase tracking-wider text-muted border-b border-border bg-bg text-right">Actions</th>
               </tr>
-            ) : filteredExpenses.length === 0 ? (
-              <tr>
-                <td colSpan={5} style={{ textAlign: 'center', padding: '48px' }}>
-                  <div className="empty">
-                    <Search size={36} />
-                    <p>No expenses found</p>
-                    <button className="btn btn-primary btn-sm" onClick={onAddExpense}><Plus size={14} /> Add Expense</button>
-                  </div>
-                </td>
-              </tr>
-            ) : (
-              filteredExpenses.map((exp) => (
-                <tr key={exp.id}>
-                  <td><span className="badge badge-primary">{exp.category}</span></td>
-                  <td>
-                    <p style={{ fontWeight: 500 }}>{exp.title}</p>
-                    {exp.notes && <p className="list-item-meta">{exp.notes}</p>}
+            </thead>
+            <tbody>
+              {isLoading ? (
+                <tr>
+                  <td colSpan={5} className="px-3 py-12 text-center">
+                    <div className="loading flex flex-col items-center justify-center gap-3">
+                      <div className="spinner" aria-hidden="true" />
+                      <span className="text-muted">Loading expenses...</span>
+                    </div>
                   </td>
-                  <td style={{ color: 'var(--text-dim)' }}>{formatDate(exp.date)}</td>
-                  <td style={{ textAlign: 'right', fontWeight: 600 }}>{formatCurrency(exp.amount)}</td>
-                  <td style={{ textAlign: 'right' }}>
-                    <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end' }}>
-                      <button className="icon-btn" onClick={() => onEditExpense(exp)} aria-label="Edit expense">
-                        <Edit3 size={15} />
-                      </button>
-                      <button className="icon-btn" style={{ color: 'var(--danger)' }} onClick={() => onDeleteExpense(exp.id)} aria-label="Delete expense">
-                        <Trash2 size={15} />
+                </tr>
+              ) : filteredExpenses.length === 0 ? (
+                <tr>
+                  <td colSpan={5} className="px-3 py-12 text-center">
+                    <div className="empty" role="status">
+                      <Search size={36} aria-hidden="true" />
+                      <p>No expenses found</p>
+                      <button className="btn btn-primary btn-size-sm" onClick={onAddExpense} aria-label="Add an expense">
+                        <Plus size={14} aria-hidden="true" /> Add Expense
                       </button>
                     </div>
                   </td>
                 </tr>
-              ))
-            )}
-          </tbody>
-        </table>
-      </div>
+              ) : (
+                filteredExpenses.map((exp) => (
+                  <tr key={exp.id} className="hover:bg-bg transition-colors">
+                    <td className="px-3 py-3 border-b border-border">
+                      <span className="badge badge-primary">{exp.category}</span>
+                    </td>
+                    <td className="px-3 py-3 border-b border-border">
+                      <p className="font-medium truncate max-w-[300px]">{exp.title}</p>
+                      {exp.notes && <p className="list-item-meta truncate max-w-[300px]">{exp.notes}</p>}
+                    </td>
+                    <td className="px-3 py-3 border-b border-border text-dim">{formatDate(exp.date)}</td>
+                    <td className="px-3 py-3 border-b border-border text-right font-semibold">{formatCurrency(exp.amount)}</td>
+                    <td className="px-3 py-3 border-b border-border text-right">
+                      <div className="flex items-center justify-end gap-1">
+                        <button
+                          className="icon-btn"
+                          onClick={() => onEditExpense(exp)}
+                          aria-label={`Edit expense: ${exp.title}`}
+                        >
+                          <Edit3 size={15} aria-hidden="true" />
+                        </button>
+                        <button
+                          className="icon-btn text-danger"
+                          onClick={() => onDeleteExpense(exp.id)}
+                          aria-label={`Delete expense: ${exp.title}`}
+                        >
+                          <Trash2 size={15} aria-hidden="true" />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
+      </section>
     </div>
   );
 }

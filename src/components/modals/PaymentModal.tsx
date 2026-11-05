@@ -69,18 +69,18 @@ export function PaymentModal({
   if (!isOpen) return null;
 
   return (
-    <div className="modal-overlay" onClick={onClose}>
-      <div className="modal" onClick={(e) => e.stopPropagation()}>
+    <div className="modal-overlay" onClick={onClose} role="dialog" aria-modal="true" aria-labelledby="payment-modal-title">
+      <div className="modal max-w-[480px]" onClick={(e) => e.stopPropagation()}>
         <div className="modal-header">
-          <h3 className="modal-title">Record Payment</h3>
-          <button className="modal-close" onClick={onClose} aria-label="Close"><X size={20} /></button>
+          <h3 id="payment-modal-title" className="modal-title">Record Payment</h3>
+          <button className="modal-close" onClick={onClose} aria-label="Close modal"><X size={20} aria-hidden="true" /></button>
         </div>
         <form onSubmit={handleSubmit} className="modal-body">
           {selectedDebt && (
-            <div style={{ marginBottom: '16px', padding: '12px', borderRadius: 'var(--radius)', background: 'var(--bg)', border: '1px solid var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <div className="mb-4 p-3 rounded-lg bg-bg border border-border flex items-center justify-between" role="status" aria-live="polite">
               <div>
-                <p style={{ fontWeight: 500 }}>{selectedDebt.title}</p>
-                <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>with {selectedDebt.friendName}</p>
+                <p className="font-medium">{selectedDebt.title}</p>
+                <p className="text-sm text-muted">with {selectedDebt.friendName}</p>
               </div>
               <span className={`badge ${selectedDebt.direction === 'owes_me' ? 'badge-success' : 'badge-warning'}`} style={{ fontSize: '0.75rem' }}>
                 Remaining: {formatCurrency(selectedDebt.outstanding)}
@@ -88,8 +88,8 @@ export function PaymentModal({
             </div>
           )}
 
-          <div className="field">
-            <label style={{ display: 'block', marginBottom: '8px', fontSize: '0.8rem', fontWeight: 500, color: 'var(--text-dim)' }}>For which bill? *</label>
+          <div className="input-wrapper">
+            <label className="input-label">For which bill? <span className="text-danger" aria-hidden="true">*</span></label>
             <select
               value={formData.debtId}
               onChange={(e) => {
@@ -102,6 +102,8 @@ export function PaymentModal({
                 }));
               }}
               required
+              className="select-field"
+              aria-label="Select bill"
             >
               <option value={0}>Select a bill</option>
               {openDebts.map((d) => (
@@ -112,36 +114,61 @@ export function PaymentModal({
             </select>
           </div>
 
-          <div className="field-row">
-            <div className="field">
-              <label htmlFor="payment-amount">How many rupees paid? (₹) *</label>
-              <input id="payment-amount" type="number" min="0.01" max={selectedDebt?.outstanding || undefined} step="0.01" value={formData.amount || ''} onChange={(e) => handleChange('amount', Number(e.target.value))} required />
+          <div className="flex flex-col sm:flex-row gap-4">
+            <div className="input-wrapper flex-1">
+              <label htmlFor="payment-amount" className="input-label">How many rupees paid? (₹) <span className="text-danger" aria-hidden="true">*</span></label>
+              <input
+                id="payment-amount"
+                type="number"
+                min="0.01"
+                max={selectedDebt?.outstanding || undefined}
+                step="0.01"
+                value={formData.amount || ''}
+                onChange={(e) => handleChange('amount', Number(e.target.value))}
+                required
+                className="input-field"
+              />
             </div>
-            <div className="field">
-              <label htmlFor="payment-date">Date Paid *</label>
-              <input id="payment-date" type="date" value={formData.date} onChange={(e) => handleChange('date', e.target.value)} required />
+            <div className="input-wrapper flex-1">
+              <label htmlFor="payment-date" className="input-label">Date Paid <span className="text-danger" aria-hidden="true">*</span></label>
+              <input
+                id="payment-date"
+                type="date"
+                value={formData.date}
+                onChange={(e) => handleChange('date', e.target.value)}
+                required
+                className="input-field"
+              />
             </div>
           </div>
 
           {selectedDebt && formData.amount !== selectedDebt.outstanding && (
             <button
               type="button"
-              className="btn btn-secondary"
-              style={{ borderStyle: 'dashed', width: '100%' }}
+              className="btn btn-secondary w-full border-dashed"
               onClick={() => setFormData((prev) => ({ ...prev, amount: selectedDebt.outstanding }))}
             >
               Pay Full Balance ({formatCurrency(selectedDebt.outstanding)})
             </button>
           )}
 
-          <div className="field">
-            <label htmlFor="payment-notes">Payment Note (optional)</label>
-            <input id="payment-notes" type="text" placeholder="e.g. GPay, PhonePe, Cash, UPI" value={formData.notes} onChange={(e) => handleChange('notes', e.target.value)} />
+          <div className="input-wrapper">
+            <label htmlFor="payment-notes" className="input-label">Payment Note (optional)</label>
+            <input
+              id="payment-notes"
+              type="text"
+              placeholder="e.g. GPay, PhonePe, Cash, UPI"
+              value={formData.notes}
+              onChange={(e) => handleChange('notes', e.target.value)}
+              className="input-field"
+            />
           </div>
 
           <div className="modal-footer">
-            <button className="btn btn-secondary" type="button" onClick={onClose} disabled={isSubmitting}>Cancel</button>
-            <button className="btn btn-primary" type="submit" disabled={isSubmitting}><CheckCircle2 size={16} /> Save Payment</button>
+            <button className="btn btn-secondary btn-size-md" type="button" onClick={onClose} disabled={isSubmitting}>Cancel</button>
+            <button className="btn btn-primary btn-size-md" type="submit" disabled={isSubmitting}>
+              <CheckCircle2 size={16} aria-hidden="true" /> Save Payment
+            </button>
           </div>
         </form>
       </div>

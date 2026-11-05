@@ -7,11 +7,13 @@ dotenv.config();
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const rootDir = path.resolve(__dirname, '..', '..');
 
+const defaultClientOrigin = process.env.CLIENT_ORIGIN || 'http://10.196.216.112:5173';
+
 export const config = {
   rootDir,
   port: Number(process.env.PORT || 4000),
   databaseUrl: process.env.DATABASE_URL || './server/data/spendwise.sqlite',
-  clientOrigin: process.env.CLIENT_ORIGIN || 'http://127.0.0.1:5173',
+  clientOrigin: defaultClientOrigin,
   authSecret: process.env.AUTH_SECRET || 'spendwise-local-development-secret'
 };
 
